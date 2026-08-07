@@ -1,19 +1,53 @@
-import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import {createStaticNavigation} from "@react-navigation/native"
+import {createNativeStackNavigator} from "@react-navigation/native-stack"
 
-export default function App() {
-  return (
-    <View className="flex-1 items-center justify-center bg-slate-100 px-6">
-      <View className="bg-white p-8 rounded-2xl shadow-lg items-center border border-slate-200 w-full max-w-sm">
-        <Text className="text-3xl mb-2">🚀</Text>
-        <Text className="text-2xl font-bold text-blue-600 text-center mb-2">
-          ¡Tailwind Funciona!
-        </Text>
-        <Text className="text-slate-500 text-center text-base">
-          NativeWind v4 se ha enlazado correctamente con tu archivo global.css.
-        </Text>
-      </View>
-      <StatusBar style="dark" />
-    </View>
-  );
+// Screens
+import SignInScreen from "./src/screens/SignInScreen";
+import SignUpScreen from "./src/screens/SignUpScreen";
+import ResolverScreen from "./src/screens/ResolverScreen";
+import LandingPageScreen from "./src/screens/LandingPageScreen";
+import DashBoardScreen from "./src/screens/DashBoardScreen";
+
+const CheckAuth = createNativeStackNavigator({
+  screenOptions:{headerShown:false},
+  screens:{
+    Resolver:ResolverScreen
+  }
+})
+
+const AuthFlow = createNativeStackNavigator({
+  screenOptions: { headerShown: false},
+  screens:{
+      Landing: LandingPageScreen,
+      SignIn: SignInScreen,
+      SignUp: SignUpScreen
+  }
+});
+
+const MainFlow = createNativeStackNavigator({
+   screenOptions: { headerShown: false },
+    screens:{
+    DashBoard:DashBoardScreen
+    }
+});
+
+const AppContainer = createNativeStackNavigator({
+  screenOptions:{headerShown:false},
+  screens:{
+    CheckAuth,
+    AuthFlow,
+    MainFlow
+  }
+})
+
+const App = createStaticNavigation(AppContainer)
+
+export default () => {
+  return(
+    <>
+    <App/>
+    <StatusBar style="auto" hidden />
+    </>
+  )
 }

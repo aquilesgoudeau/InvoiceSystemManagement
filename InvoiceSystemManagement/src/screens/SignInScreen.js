@@ -1,22 +1,17 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import React from "react"
+import { View, Platform } from "react-native"
+import AppleSignIn from "../components/signInComponent/appleSignin"
+import GoogleAuth from "../components/signInComponent/googleAuth"
+import LandingLogo from "../components/signInComponent/landingLogo"
 
 const SignInScreen = () => {
-  const navigation = useNavigation();
 
-  return (
-    <View className="flex-1 items-center justify-center bg-slate-100">
-      <Text className="text-2xl font-bold text-blue-600 mb-6">SignInScreen</Text>
-      
-      <TouchableOpacity 
-        className="bg-blue-500 px-6 py-3 rounded-full shadow-md active:bg-blue-700"
-        onPress={() => navigation.navigate('SignUp')}
-      >
-        <Text className="text-white font-semibold text-base">Ir a SignUp</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+    return(
+        <View className="flex-1 items-center justify-center bg-slate-100">
+           <LandingLogo/>
+           {Platform.OS === "ios" ? <AppleSignIn/> : <GoogleAuth/>}
+        </View>
+    )
+}
 
-export default SignInScreen;
+export default SignInScreen

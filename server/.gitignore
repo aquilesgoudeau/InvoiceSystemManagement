@@ -1,0 +1,6 @@
+.env
+node_modules
+# Reportes generados
+coverage/
+test-report.html
+*.log

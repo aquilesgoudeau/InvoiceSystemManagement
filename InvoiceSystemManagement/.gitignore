@@ -4,6 +4,7 @@
 node_modules/
 
 .env
+.env.*
 
 # Expo
 .expo/
@@ -46,3 +47,7 @@ yarn-error.*
 .claude
 AGENTS.md
 CLAUDE.md
+
+# Archivos y reportes generados de pruebas
+test-report.html
+coverage/

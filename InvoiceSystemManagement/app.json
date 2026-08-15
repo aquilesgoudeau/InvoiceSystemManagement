@@ -1,29 +1,49 @@
 {
   "expo": {
-    "name": "InvoiceSystemManagement",
+    "name": "Ism",
     "slug": "InvoiceSystemManagement",
+    "scheme": "invoicesystemmanagement",
+       
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.app.invoicesystemmanagement"
+      "bundleIdentifier": "com.app.invoicesystemmanagement",
+      "usesAppleSignIn": true, 
+      "infoPlist": {
+      "ITSAppUsesNonExemptEncryption": false,
+      "NSCameraUsageDescription": "Necesitamos acceso a la cámara para escanear tus facturas."
+    }
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.app.invoicesystemmanagement"
+      "package": "com.app.invoicesystemmanagement",
+      "permissions": ["CAMERA"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
+      "@react-native-google-signin/google-signin",
+      "expo-apple-authentication",
+      "expo-secure-store",
+      [
+        "react-native-document-scanner-plugin",
+        {
+          "cameraPermission": "Necesitamos acceso a la cámara para escanear documentos."
+        }
+      ],
+      "expo-web-browser",
+      "expo-sharing",
+      "expo-sqlite"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useMemo } from 'react';
 
 export default (reducer, actions, defaultValue) => {
   const Context = React.createContext();
@@ -6,10 +6,14 @@ export default (reducer, actions, defaultValue) => {
   const Provider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, defaultValue);
 
-    const boundActions = {};
-    for (let key in actions) {
-      boundActions[key] = actions[key](dispatch);
-    }
+    // Memorizamos las acciones para que no se re-creen en cada renderizado
+    const boundActions = useMemo(() => {
+      const bound = {};
+      for (let key in actions) {
+        bound[key] = actions[key](dispatch);
+      }
+      return bound;
+    }, [dispatch]);
 
     return (
       <Context.Provider value={{ state, ...boundActions }}>

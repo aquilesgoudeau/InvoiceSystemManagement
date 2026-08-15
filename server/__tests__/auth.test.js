@@ -111,6 +111,85 @@ describe('AuthRoutes API', () => {
       expect(response.status).toBe(401);
       expect(response.body.error).toContain('Unable to sign in with Apple');
     });
+
+    it('should register a new user with null email when Apple does not return one', async () => {
+      // Apple only sends email on the user's very first authorization —
+      // subsequent logins omit it. This must not crash and must store null.
+      appleSpy.mockResolvedValue({
+        sub: 'apple-user-456',
+        email: undefined
+      });
+
+      findOneSpy.mockResolvedValue(null);
+      saveSpy.mockImplementation(function() {
+        return Promise.resolve(this);
+      });
+
+      const response = await request(app)
+        .post('/auth/apple-login')
+        .send({ identityToken: 'valid-apple-token', name: 'No Email User' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.user.email).toBeNull();
+      expect(saveSpy).toHaveBeenCalled();
+    });
+
+    it('should not update or save an existing Apple user when no email is returned', async () => {
+      appleSpy.mockResolvedValue({
+        sub: 'apple-user-123',
+        email: undefined // Apple omitted it this time
+      });
+
+      const existingUser = new User({
+        _id: '507f1f77bcf86cd799439011',
+        appleId: 'apple-user-123',
+        email: 'already-have-this@example.com',
+        name: 'Apple User',
+        isVerified: true
+      });
+
+      findOneSpy.mockResolvedValue(existingUser);
+      saveSpy.mockImplementation(function() {
+        return Promise.resolve(this);
+      });
+
+      const response = await request(app)
+        .post('/auth/apple-login')
+        .send({ identityToken: 'valid-apple-token' });
+
+      expect(response.status).toBe(200);
+      // Email should be untouched, and save() should NOT be called since
+      // the else-if condition (tokenEmail && email !== tokenEmail) is false.
+      expect(response.body.user.email).toBe('already-have-this@example.com');
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not save an existing Apple user when the returned email is unchanged', async () => {
+      appleSpy.mockResolvedValue({
+        sub: 'apple-user-123',
+        email: 'same@example.com'
+      });
+
+      const existingUser = new User({
+        _id: '507f1f77bcf86cd799439011',
+        appleId: 'apple-user-123',
+        email: 'same@example.com', // identical to what Apple returns
+        name: 'Apple User',
+        isVerified: true
+      });
+
+      findOneSpy.mockResolvedValue(existingUser);
+      saveSpy.mockImplementation(function() {
+        return Promise.resolve(this);
+      });
+
+      const response = await request(app)
+        .post('/auth/apple-login')
+        .send({ identityToken: 'valid-apple-token' });
+
+      expect(response.status).toBe(200);
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('POST /auth/google-login', () => {
@@ -189,6 +268,30 @@ describe('AuthRoutes API', () => {
 
       expect(response.status).toBe(401);
       expect(response.body.error).toContain('Unable to sign in with Google');
+    });
+
+    it('should register a new Google user with null email when the payload omits it', async () => {
+      googleSpy.mockResolvedValue({
+        getPayload: () => ({
+          sub: 'google-user-789',
+          email: undefined,
+          name: 'No Email Google User',
+          picture: 'https://example.com/pic.jpg'
+        })
+      });
+
+      findOneSpy.mockResolvedValue(null);
+      saveSpy.mockImplementation(function() {
+        return Promise.resolve(this);
+      });
+
+      const response = await request(app)
+        .post('/auth/google-login')
+        .send({ idToken: 'valid-google-token' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.user.email).toBeNull();
+      expect(saveSpy).toHaveBeenCalled();
     });
   });
 });

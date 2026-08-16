@@ -3,7 +3,7 @@ import {navigate} from "../navigation/navigationRef"
 import axiosApi from "../services/axiosApi"
 import * as SecureStore from "expo-secure-store"
 
-const authReducer = (state,action) => {
+export const authReducer = (state,action) => {
     switch(action.type){
         case 'sign_in':
             return {errorMessage:'', token:action.payload.token, email:action.payload.email}

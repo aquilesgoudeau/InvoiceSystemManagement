@@ -242,5 +242,78 @@ describe('ReportsRoutes API', () => {
       const subject = getLastEmailSubject();
       expect(subject).toContain('All dates');
     });
+
+    it('falls back to "All dates" when the date string is genuinely unparseable', async () => {
+      // "abc-def-ghi" has 3 dash-separated parts, so it takes the manual
+      // Y/M/D parse path — but Number("abc") is NaN, producing an Invalid
+      // Date. This exercises the isNaN(date.getTime()) true branch.
+      mockSend.mockResolvedValue({ success: true });
+
+      const response = await request(app)
+        .post('/reports/send')
+        .send({
+          invoices: validInvoices,
+          recipientEmail: 'test@example.com',
+          dateRange: {
+            startDate: 'abc-def-ghi',
+            endDate: 'abc-def-ghi',
+          },
+        });
+
+      expect(response.status).toBe(200);
+      expect(mockSend).toHaveBeenCalled();
+
+      const subject = getLastEmailSubject();
+      expect(subject).not.toContain('Invalid Date');
+      expect(subject).toContain('All dates');
+    });
+
+    it('respects a provided endDate when only startDate is missing', async () => {
+      // Only endDate is given, so rawEnd is already truthy going into the
+      // auto-calc block — this exercises the FALSE branch of `if (!rawEnd)`,
+      // which until now had only ever been hit as true.
+      mockSend.mockResolvedValue({ success: true });
+
+      const response = await request(app)
+        .post('/reports/send')
+        .send({
+          invoices: validInvoices,
+          recipientEmail: 'test@example.com',
+          dateRange: {
+            endDate: '2026-08-20',
+          },
+        });
+
+      expect(response.status).toBe(200);
+      expect(mockSend).toHaveBeenCalled();
+
+      const subject = getLastEmailSubject();
+      // Earliest invoice date (2026-08-01) should be used for the start,
+      // and the given endDate (2026-08-20) should be respected as-is.
+      expect(subject).toContain('1 August 26');
+      expect(subject).toContain('20 August 26');
+    });
+
+    it('shows a single date instead of a range when start and end are the same day', async () => {
+      mockSend.mockResolvedValue({ success: true });
+
+      const response = await request(app)
+        .post('/reports/send')
+        .send({
+          invoices: validInvoices,
+          recipientEmail: 'test@example.com',
+          dateRange: {
+            startDate: '2026-08-01',
+            endDate: '2026-08-01',
+          },
+        });
+
+      expect(response.status).toBe(200);
+      expect(mockSend).toHaveBeenCalled();
+
+      const subject = getLastEmailSubject();
+      expect(subject).toBe('Invoice report - 1 August 26');
+      expect(subject).not.toContain('–'); // no range separator for a single day
+    });
   });
 });

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, Button } from 'react-native';
 import { render, fireEvent, act } from '@testing-library/react-native';
-import { Context, Provider } from '../../src/contexts/authContext';
+import { Context, Provider, authReducer } from '../../src/contexts/authContext';
 import axiosApi from '../../src/services/axiosApi';
 import * as SecureStore from 'expo-secure-store';
 import { navigate } from '../../src/navigation/navigationRef';
@@ -165,6 +165,24 @@ describe('AuthContext integration tests', () => {
     expect(navigate).toHaveBeenCalledWith('Home');
   });
 
+  it('should handle signInWithApple failure with error message', async () => {
+    // This was the missing counterpart to the Google failure test — the
+    // Apple catch block was never exercised before.
+    const mockError = {
+      response: {
+        data: { error: 'Invalid Apple Token' },
+      },
+    };
+    axiosApi.post.mockRejectedValueOnce(mockError);
+
+    const { getByTestId } = await renderWithProvider();
+
+    await fireEvent.press(getByTestId('appleBtn'));
+
+    expect(getByTestId('token').props.children).toBe('null');
+    expect(getByTestId('errorMessage').props.children).toBe('Invalid Apple Token');
+  });
+
   it('should handle signOut correctly', async () => {
     await SecureStore.setItemAsync('token', 'token-to-delete');
     const { getByTestId } = await renderWithProvider();
@@ -175,5 +193,18 @@ describe('AuthContext integration tests', () => {
     expect(savedToken).toBeNull();
     expect(getByTestId('token').props.children).toBe('null');
     expect(navigate).toHaveBeenCalledWith('Resolver');
+  });
+});
+
+describe('authReducer (unit)', () => {
+  it('returns the current state unchanged for an unrecognized action type', () => {
+    // Covers the `default: return state` branch, which is unreachable
+    // through the Provider since only known action types are ever dispatched
+    // by the exposed bound actions.
+    const currentState = { token: 'abc', email: 'x@y.com', errorMessage: '' };
+
+    const result = authReducer(currentState, { type: 'some_unknown_action' });
+
+    expect(result).toBe(currentState); // same reference, untouched
   });
 });

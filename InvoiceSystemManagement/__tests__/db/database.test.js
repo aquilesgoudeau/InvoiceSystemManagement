@@ -46,6 +46,40 @@ describe('Database SQLite Integration Tests', () => {
       // execAsync should only run for user_version settings, not tables recreating
       expect(global.mockDb.execAsync).toHaveBeenCalledWith('PRAGMA user_version = 1');
     });
+
+    it('should default to version 0 when PRAGMA user_version returns no row at all', async () => {
+      // Different from the "user_version = 0" test above: here the query
+      // itself returns null/undefined (e.g. a brand new file), exercising
+      // the `result?.user_version ?? 0` fallback rather than an explicit 0.
+      global.mockDb.getFirstAsync.mockImplementation(async (query) => {
+        if (query.includes('PRAGMA user_version')) {
+          return null;
+        }
+        return null;
+      });
+
+      await db.initDatabase();
+
+      expect(global.mockDb.execAsync).toHaveBeenCalledWith(
+        expect.stringContaining('CREATE TABLE IF NOT EXISTS invoices')
+      );
+    });
+  });
+
+  describe('getDb connection caching', () => {
+    it('reuses the existing connection instead of opening a new one on later calls', async () => {
+      const SQLite = require('expo-sqlite');
+
+      await db.initDatabase();
+      expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(1);
+
+      // saveInvoice() internally calls getDb(), which should now hit the
+      // `if (db) return db` cached branch instead of reconnecting.
+      global.mockDb.runAsync.mockResolvedValueOnce({ lastInsertRowId: 1 });
+      await db.saveInvoice({ vendorName: 'Test Vendor' });
+
+      expect(SQLite.openDatabaseAsync).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('saveInvoice', () => {
@@ -80,6 +114,26 @@ describe('Database SQLite Integration Tests', () => {
         JSON.stringify(invoiceData.items)
       );
     });
+
+    it('should fall back to null/[] defaults when optional fields are missing', async () => {
+      global.mockDb.runAsync.mockResolvedValueOnce({ lastInsertRowId: 7 });
+
+      const resultId = await db.saveInvoice({ vendorName: 'Only Vendor' });
+
+      expect(resultId).toBe(7);
+      expect(global.mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO invoices'),
+        'Only Vendor',
+        null, // abn
+        null, // invoiceNumber
+        null, // invoiceDate
+        null, // currency
+        null, // subtotal
+        null, // tax
+        null, // total
+        JSON.stringify([]) // items defaults to an empty array
+      );
+    });
   });
 
   describe('getAllInvoices', () => {
@@ -107,6 +161,17 @@ describe('Database SQLite Integration Tests', () => {
 
       const invoices = await db.getAllInvoices();
       expect(invoices).toEqual([]);
+    });
+
+    it('should default items to an empty array when the stored value is falsy', async () => {
+      const mockRows = [
+        { id: 2, vendorName: 'NoItemsVendor', total: 20, items: null, createdAt: '2026-08-16' },
+      ];
+      global.mockDb.getAllAsync.mockResolvedValueOnce(mockRows);
+
+      const invoices = await db.getAllInvoices();
+
+      expect(invoices[0].items).toEqual([]);
     });
   });
 
@@ -140,6 +205,21 @@ describe('Database SQLite Integration Tests', () => {
         'some_key',
         'new@test.com'
       );
+    });
+
+    it('should return null when the requested setting key does not exist', async () => {
+      global.mockDb.getFirstAsync.mockImplementation(async (query) => {
+        if (query.includes('PRAGMA user_version')) {
+          return { user_version: 1 };
+        }
+        if (query.includes('SELECT value FROM app_settings')) {
+          return null; // no row for this key
+        }
+        return null;
+      });
+
+      const value = await db.getSetting('nonexistent_key');
+      expect(value).toBeNull();
     });
 
     it('should support email helper methods', async () => {

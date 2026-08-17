@@ -1,6 +1,7 @@
 import { MailerSend, EmailParams, Sender, Recipient, Attachment } from "mailersend";
 import { protectedKeys } from '../config/keys.js';
 import { generateInvoicesCSV, buildReportFileName } from '../services/reports.js';
+import { requireAuth } from '../middleware/authMiddleware.js';
 
 const mailerSend = new MailerSend({
   apiKey: protectedKeys.mailerSendApiKey,
@@ -37,7 +38,7 @@ const formatDateString = (input) => {
 
 export const ReportsRoutes = app => {
 
-  app.post('/reports/send', async (req, res) => {
+  app.post('/reports/send',requireAuth,async (req, res) => {
     const { invoices, recipientEmail, dateRange } = req.body;
 
     if (!recipientEmail || !/^\S+@\S+\.\S+$/.test(recipientEmail)) {

@@ -1,5 +1,5 @@
 import createDataContext from "./createDataContext"
-import {navigate} from "../navigation/navigationRef"
+import {navigate, goBack, resetTo} from "../navigation/navigationRef"
 import axiosApi from "../services/axiosApi"
 import * as SecureStore from "expo-secure-store"
 
@@ -24,9 +24,9 @@ const tryLocalSignIn = (dispatch) => async () =>{
   
   if(token){
     dispatch({type:"sign_in",payload:{token}})
-    navigate("Home")
+    resetTo("Home")
   }else{
-    navigate("SignIn")
+    resetTo("SignIn")
   }
 }
 const clearErrorMessage = (dispatch) => ()=>{
@@ -57,7 +57,7 @@ const signInWithApple = (dispatch) => async (appleAuthRequestResponse) => {
             }
         });
 
-        navigate('Home');
+        resetTo('Home');
     } catch (err) {
         console.log(err);
         const errorMessage = err.response?.data?.error || "Something went wrong while signing in with Apple. Please try again.";
@@ -75,7 +75,7 @@ const signInWithGoogle = (dispatch) => async (idToken) => {
             type: "sign_in", 
             payload: { token: response.data.token, email: response.data.user.email } 
         });
-        navigate("Resolver");
+        resetTo("Resolver");
    } catch (err) {
         console.log(err);
         const errorMessage = err.response?.data?.error || "Something went wrong while signing in with Google. Please try again."
@@ -86,7 +86,7 @@ const signInWithGoogle = (dispatch) => async (idToken) => {
 const signOut = (dispatch) => async () => {
     await SecureStore.deleteItemAsync('token')
     dispatch({type:"sign_out"})
-    navigate("Resolver")
+    resetTo("Resolver")
 }
 export const { Context, Provider } = createDataContext(
     authReducer,

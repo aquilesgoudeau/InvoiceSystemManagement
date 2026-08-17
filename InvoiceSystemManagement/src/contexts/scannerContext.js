@@ -1,5 +1,5 @@
 import createDataContext from './createDataContext';
-import { navigate, goBack } from '../navigation/navigationRef';
+import { navigate, goBack,resetTo } from '../navigation/navigationRef';
 import axiosApi from '../services/axiosApi'
 import { saveInvoice, getAllInvoices, deleteInvoice } from '../db/database'
  

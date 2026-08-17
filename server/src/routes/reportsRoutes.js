@@ -114,7 +114,7 @@ export const ReportsRoutes = app => {
                   <tr>
                     <td align="center" style="background-color: #0099ff; padding: 35px 20px;">
                       <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: bold;">
-                        Your invoice report is ready!
+                        Your invoice reports are ready!
                       </h1>
                     </td>
                   </tr>

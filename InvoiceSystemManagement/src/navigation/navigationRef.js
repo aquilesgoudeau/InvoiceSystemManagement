@@ -13,3 +13,11 @@ export function goBack() {
     navigationRef.goBack();
   }
 }
+export function resetTo(name, params) {
+  if (navigationRef.isReady()) {
+    navigationRef.reset({
+      index: 0,
+      routes: [{ name, params }],
+    });
+  }
+}

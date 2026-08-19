@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Context as ScannerContext } from '../../contexts/scannerContext';
+import { formatInvoiceDate } from '../../utils/formatDate';
 
 const InvoiceItem = ({ invoice }) => {
   const { selectInvoice } = useContext(ScannerContext);
@@ -17,7 +18,7 @@ const InvoiceItem = ({ invoice }) => {
           {vendorName || 'Sin proveedor'}
         </Text>
         {invoiceDate && (
-          <Text className="text-blue-800 text-xs mt-0.5">{invoiceDate}</Text>
+          <Text className="text-blue-800 text-xs mt-0.5">{formatInvoiceDate(invoiceDate)}</Text>
         )}
       </View>
 

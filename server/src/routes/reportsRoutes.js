@@ -38,21 +38,21 @@ const formatDateString = (input) => {
 
 export const ReportsRoutes = app => {
 
-  app.post('/reports/send',requireAuth,async (req, res) => {
+  app.post('/reports/send',requireAuth, async (req, res) => {
     const { invoices, recipientEmail, dateRange } = req.body;
 
     if (!recipientEmail || !/^\S+@\S+\.\S+$/.test(recipientEmail)) {
-      return res.status(422).json({ error: 'Email inválido' });
+      return res.status(422).json({ error: 'Invalid email address' });
     }
-    if (!Array.isArray(invoices) || invoices.length === 0) {
-      return res.status(422).json({ error: 'No hay facturas para exportar' });
+   if (!Array.isArray(invoices) || invoices.length === 0) {
+      return res.status(422).json({ error: 'No invoices to export' });
     }
 
     try {
       const csvContent = generateInvoicesCSV(invoices);
       const fileName = buildReportFileName(dateRange);
 
-      const sentFrom = new Sender(protectedKeys.emailFrom, "Tu App Invoices");
+      const sentFrom = new Sender(protectedKeys.emailFrom, "InvoicesSM");
       const recipients = [new Recipient(recipientEmail)];
       const attachments = [
         new Attachment(
@@ -172,8 +172,13 @@ export const ReportsRoutes = app => {
 
       res.json({ success: true });
     } catch (err) {
-      console.error('Error enviando reporte:', err);
-      res.status(500).json({ error: 'No se pudo enviar el reporte' });
+      /*console.error('Error enviando reporte:', err);
+      res.status(500).json({ error: 'No se pudo enviar el reporte' });*/
+      console.error('Error enviando reporte:', JSON.stringify(err.body || err.response?.body || err, null, 2));
+      res.status(500).json({ 
+        error: 'No se pudo enviar el reporte',
+        detail: err.body || err.response?.body || err.message // ⚠️ quitar esta línea antes de producción final
+      });
     }
   });
 

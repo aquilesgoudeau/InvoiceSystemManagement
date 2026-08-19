@@ -36,7 +36,8 @@ const LandingPageScreen = () => {
 
     // De lo contrario, filtra comparando las fechas
     return invoices.filter((inv) => {
-      const rawDate = inv.date || inv.created_at || inv.createdAt;
+      //const rawDate = inv.date || inv.created_at || inv.createdAt;
+      const rawDate = inv.invoiceDate || inv.date || inv.created_at || inv.createdAt;
       if (!rawDate) return true; // Si la factura no tiene fecha, la muestra igual
 
       const invDate = new Date(rawDate);

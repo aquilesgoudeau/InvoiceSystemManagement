@@ -62,14 +62,15 @@ const ExportReportModal = ({ visible, invoices, dateRange, onClose }) => {
           </Text>
 
           <TextInput
-            placeholder="Email del destinatario"
+            placeholder="Recipient's email address"
             placeholderTextColor="#94a3b8"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
             editable={!disabled}
-            className="border border-slate-200 rounded-2xl px-4 py-3 mb-2 text-base text-slate-900 bg-slate-50"
+            style={{paddingVertical: 12,textAlignVertical: 'center',lineHeight: 20,fontSize:16}}
+            className="border border-slate-200 rounded-2xl px-4 mb-2 text-base text-slate-900 bg-slate-50"
           />
 
           {(localError || error) && (

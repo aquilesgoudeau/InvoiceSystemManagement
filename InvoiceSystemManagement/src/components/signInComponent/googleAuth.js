@@ -12,7 +12,7 @@ import {
 
 if(Platform.OS === "android"){
 GoogleSignin.configure({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    webClientId:process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 });
 }
 const GoogleAuth = () => {
@@ -88,3 +88,11 @@ const GoogleAuth = () => {
 };
 
 export default GoogleAuth
+
+/*
+
+Buscá el archivo generado durante el build: `android/app/build/generated/res/processDebugGoogleServices/values/values.xml` 
+(o `processReleaseGoogleServices` para release). Buscá la línea `<string name="default_web_client_id">...</string>`. 
+Si existe y tiene un valor, ese es el Client ID que la librería usaría automáticamente.
+
+*/

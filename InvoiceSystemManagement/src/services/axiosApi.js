@@ -7,7 +7,7 @@ const baseURL = Platform.OS === 'android'
   : process.env.EXPO_PUBLIC_API_URL_IOS;
 
 const instance = axios.create({
-  baseURL: baseURL,
+  baseURL:baseURL,
   headers: {
     'Content-Type': 'application/json'
   }

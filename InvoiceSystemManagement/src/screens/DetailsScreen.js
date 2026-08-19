@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Context as ScannerContext } from '../contexts/scannerContext';
+import { formatInvoiceDate } from '../utils/formatDate'
 
 const DetailsScreen = () => {
   const { state, backToList, deleteInvoiceRecord } = useContext(ScannerContext);
@@ -67,7 +68,7 @@ const DetailsScreen = () => {
             <Text className="text-slate-500 text-sm mb-0.5">Invoice N° {invoiceNumber}</Text>
           )}
           {invoiceDate && (
-            <Text className="text-slate-500 text-sm">{invoiceDate}</Text>
+            <Text className="text-slate-500 text-sm">{formatInvoiceDate(invoiceDate)}</Text>
           )}
         </View>
 

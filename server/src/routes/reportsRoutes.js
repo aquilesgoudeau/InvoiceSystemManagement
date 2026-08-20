@@ -52,7 +52,7 @@ export const ReportsRoutes = app => {
       const csvContent = generateInvoicesCSV(invoices);
       const fileName = buildReportFileName(dateRange);
 
-      const sentFrom = new Sender(protectedKeys.emailFrom, "InvoicesSM");
+      const sentFrom = new Sender(protectedKeys.emailFrom, "InvoiceSM");
       const recipients = [new Recipient(recipientEmail)];
       const attachments = [
         new Attachment(

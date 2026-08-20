@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {createStaticNavigation} from "@react-navigation/native"
 import {createNativeStackNavigator} from "@react-navigation/native-stack"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -79,17 +80,17 @@ const Navigation = createStaticNavigation(AppContainer)
 
 export default () => {
   return(
-   
-    <ScannerProvider>
-      <DateFilterProvider>
-        <ExportProvider>
-          <AuthProvider>
-         <Navigation ref={navigationRef}/>
-           <StatusBar style="auto" hidden />
-           </AuthProvider>
-         </ExportProvider>
-      </DateFilterProvider>
-    </ScannerProvider>
-    
+    <SafeAreaProvider>
+      <ScannerProvider>
+        <DateFilterProvider>
+          <ExportProvider>
+            <AuthProvider>
+          <Navigation ref={navigationRef}/>
+            <StatusBar style="auto" hidden />
+            </AuthProvider>
+          </ExportProvider>
+        </DateFilterProvider>
+      </ScannerProvider>
+    </SafeAreaProvider>
   )
 }

@@ -64,6 +64,10 @@ flowchart TD
 
 *Receipt scan → AI-powered OCR extraction → invoice detail view.*
 
+![ISM Screenshots](./InvoiceSystemManagement/assets/ism_screenshots.jpg)
+
+*Sign-in with Apple, invoice list, expense analysis by category, and custom date range filtering.*
+
 ---
 
 ## 📁 Repository Structure

@@ -47,7 +47,9 @@ yarn-error.*
 .claude
 AGENTS.md
 CLAUDE.md
+GEMINI.md
 
 # Archivos y reportes generados de pruebas
 test-report.html
 coverage/
+.DS_Store

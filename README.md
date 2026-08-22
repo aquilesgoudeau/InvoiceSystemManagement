@@ -12,19 +12,20 @@ ISM automates end-to-end invoice lifecycles, offering multi-provider federated a
 flowchart TD
     subgraph MobileClient [Mobile Client - React Native / Expo 57]
         UI[Tailwind CSS / NativeWind UI]
-        AuthM[Apple Sign-In and Google OAuth]
+        AuthM[Apple Sign-In & Google OAuth]
         LocalStorage[(Local SQLite Cache)]
-        Scanner[Camera Scanner and Gemini OCR]
-        Reports[Financial Charts and ExcelJS]
+        Scanner[Native Camera Scanner]
+        Reports[Financial Charts & ExcelJS]
     end
 
-    subgraph Backend [Backend - Node.js / Express on AWS EC2]
+    subgraph Backend [Backend Service - Node.js / Express on AWS EC2]
         API[RESTful API Endpoints]
-        AuthV[JWT and Token Verification]
+        GeminiRouter[Express Router: /api/ocr-gemini]
+        AuthV[JWT & Token Verification]
         Mail[MailerSend Transactional Service]
     end
 
-    subgraph CloudServices [Cloud Services and Providers]
+    subgraph CloudServices [Cloud Services & External Providers]
         Mongo[(MongoDB Atlas)]
         AppleID[Apple Identity Services]
         GCP[Google Cloud Identity]
@@ -33,9 +34,10 @@ flowchart TD
 
     MobileClient -->|Secure REST APIs / JWT| Backend
     MobileClient <--> LocalStorage
+    Scanner -->|Upload Receipt Image| GeminiRouter
+    GeminiRouter -->|Vision Multimodal Payload| GeminiAI
     Backend --> Mongo
     Backend --> Mail
-    Scanner -->|Image Payload| GeminiAI
     AuthM --> AppleID
     AuthM --> GCP
 ```

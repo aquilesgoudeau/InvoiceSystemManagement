@@ -10,25 +10,25 @@ ISM automates end-to-end invoice lifecycles, offering multi-provider federated a
 
 ```mermaid
 flowchart TD
-    subgraph MobileClient["📱 Mobile Client (React Native / Expo 57)"]
-        UI["Tailwind CSS (NativeWind) UI"]
-        AuthM["Apple Sign-In & Google OAuth"]
-        LocalStorage[("Local SQLite Cache")]
-        Scanner["Camera Scanner + Gemini OCR"]
-        Reports["Financial Charts & ExcelJS"]
+    subgraph MobileClient [Mobile Client - React Native / Expo 57]
+        UI[Tailwind CSS / NativeWind UI]
+        AuthM[Apple Sign-In and Google OAuth]
+        LocalStorage[(Local SQLite Cache)]
+        Scanner[Camera Scanner and Gemini OCR]
+        Reports[Financial Charts and ExcelJS]
     end
 
-    subgraph Backend["☁️ Backend (Node.js / Express on AWS EC2)"]
-        API["RESTful API Endpoints"]
-        AuthV["JWT & Token Verification"]
-        Mail["MailerSend Transactional Service"]
+    subgraph Backend [Backend - Node.js / Express on AWS EC2]
+        API[RESTful API Endpoints]
+        AuthV[JWT and Token Verification]
+        Mail[MailerSend Transactional Service]
     end
 
-    subgraph CloudServices["🗄️ Cloud Services & Providers"]
-        Mongo[("MongoDB Atlas")]
-        AppleID["Apple Identity Services"]
-        GCP["Google Cloud Identity"]
-        GeminiAI["Google Gemini Vision API"]
+    subgraph CloudServices [Cloud Services and Providers]
+        Mongo[(MongoDB Atlas)]
+        AppleID[Apple Identity Services]
+        GCP[Google Cloud Identity]
+        GeminiAI[Google Gemini Vision API]
     end
 
     MobileClient -->|Secure REST APIs / JWT| Backend
@@ -38,13 +38,17 @@ flowchart TD
     Scanner -->|Image Payload| GeminiAI
     AuthM --> AppleID
     AuthM --> GCP
+```
+
+---
 
 ## 🚀 Key Features
 
 * **Cross-Platform Mobile App:** Responsive UI built with Tailwind CSS (NativeWind) and React Navigation.
 * **Multimodal AI OCR:** Extracts structured text from camera-scanned receipts using the Gemini API.
-* **Multi-Provider Authentication:** Native Apple Sign-In and Google Sign-In with encrypted token storage (`expo-secure-store`).
-* **Cloud & DevOps:** Node.js API running on AWS EC2; mobile distribution tested on Google Play Console (Internal Testing) & Apple TestFlight.
+* **Multi-Provider Authentication:** Native Apple Sign-In (`expo-apple-authentication`) and Google Sign-In with encrypted token storage (`expo-secure-store`).
+* **Local Persistence & Performance:** Offline-first caching and fast structured local queries powered by `expo-sqlite`.
+* **Cloud & DevOps:** Node.js API running on AWS EC2; mobile distribution tested on Google Play Console (Internal Testing) & Apple App Store Connect / TestFlight.
 * **Automated Quality Testing:** Full unit & component test coverage with Jest, Jest-Expo, and React Native Testing Library.
 * **Document & Data Export:** Native camera scanning and automated `.xlsx` export using ExcelJS.
 
@@ -62,8 +66,9 @@ flowchart TD
 | Category | Technologies |
 | :--- | :--- |
 | **Mobile Client** | React Native, Expo 57, React 19, NativeWind (Tailwind CSS), Reanimated |
+| **Local Storage** | SQLite (`expo-sqlite`) |
 | **Backend & Cloud** | Node.js, Express.js, MongoDB, AWS EC2, Google Cloud Console |
-| **Auth & Security** | Apple Authentication, Google Sign-In, `expo-secure-store`, JWT |
+| **Auth & Security** | Apple Sign-In (`expo-apple-authentication`), Google Sign-In, `expo-secure-store`, JWT |
 | **APIs & AI** | Google Gemini API (Multimodal OCR), MailerSend API |
 | **Testing** | Jest, Jest-Expo, React Native Testing Library, `jest-html-reporter` |
 | **Distribution** | Google Play Console (Internal Tracks), App Store Connect (TestFlight) |

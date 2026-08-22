@@ -2,7 +2,7 @@
 
 A full-stack, cross-platform mobile business management and invoicing platform built with React Native (Expo) and a scalable Node.js / Express backend hosted on AWS EC2.
 
-ISM automates end-to-end invoice lifecycles, offering multi-provider federated authentication, multimodal OCR receipt parsing via Gemini AI, automated email distribution via MailerSend, and financial data reporting.
+ISM automates end-to-end invoice lifecycles, offering multi-provider federated authentication, multimodal OCR receipt parsing via Gemini AI, automated email distribution via MailerSend, offline-first local persistence via SQLite, and financial data reporting.
 
 ---
 
@@ -13,6 +13,7 @@ flowchart TD
     subgraph MobileClient["📱 Mobile Client (React Native / Expo 57)"]
         UI["Tailwind CSS (NativeWind) UI"]
         AuthM["Apple Sign-In & Google OAuth"]
+        LocalStorage[("Local SQLite Cache")]
         Scanner["Camera Scanner + Gemini OCR"]
         Reports["Financial Charts & ExcelJS"]
     end
@@ -23,20 +24,20 @@ flowchart TD
         Mail["MailerSend Transactional Service"]
     end
 
-    subgraph Database["🗄️ Database & Cloud Services"]
+    subgraph CloudServices["🗄️ Cloud Services & Providers"]
         Mongo[("MongoDB Atlas")]
+        AppleID["Apple Identity Services"]
         GCP["Google Cloud Identity"]
         GeminiAI["Google Gemini Vision API"]
     end
 
     MobileClient -->|Secure REST APIs / JWT| Backend
+    MobileClient <--> LocalStorage
     Backend --> Mongo
     Backend --> Mail
     Scanner -->|Image Payload| GeminiAI
+    AuthM --> AppleID
     AuthM --> GCP
-```
-
----
 
 ## 🚀 Key Features
 
@@ -51,7 +52,7 @@ flowchart TD
 
 ## 📁 Repository Structure
 
-* [`/InvoiceSystemManagement`](./invoiceSystemManagement) — React Native mobile application frontend (Expo).
+* [`/invoiceSystemManagement`](./invoiceSystemManagement) — React Native mobile application frontend (Expo).
 * [`/server`](./server) — Node.js, Express, MongoDB API, and AWS deployment configurations.
 
 ---
